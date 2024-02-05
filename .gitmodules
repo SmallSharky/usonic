@@ -1,0 +1,3 @@
+[submodule "3dparty/embedded-cmake-snippets"]
+	path = 3dparty/embedded-cmake-snippets
+	url = https://github.com/SmallSharky/embedded-cmake-snippets
