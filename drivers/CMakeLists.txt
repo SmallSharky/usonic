@@ -25,10 +25,8 @@ target_include_directories(
     ${STM32L5_CMSIS_DSP_INC_DIR}
 )
 
-# set_target_properties(stm32l5xx_cmsis PROPERTIES IMPORTED_LOCATION ${STM32L5_CMSIS_DSP_DIR}/Lib/GCC/libarm_ARMv8MMLl_math.a)
 add_library(stm32l5xx_cmdis_dsp STATIC IMPORTED GLOBAL)
 set_target_properties(stm32l5xx_cmdis_dsp PROPERTIES IMPORTED_LOCATION ${STM32L5_CMSIS_DSP_DIR}/Lib/GCC/libarm_ARMv8MMLldfsp_math.a)
-# target_include_directories(stm32l5xx_cmdis_dsp INTERFACE ${STM32L5_CMSIS_DSP_INC_DIR})
 
 
 
@@ -88,6 +86,5 @@ add_library(
 target_include_directories(stm32l5xx_hal INTERFACE ${STM32L5_HAL_INC_DIR} PRIVATE ${STM32L5_HAL_INC_DIR})
 target_include_directories(stm32l5xx_hal INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/configs PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/configs)
 
-# target_compile_options(stm32l5xx_hal PRIVATE -Wmissing-prototypes)
 target_link_libraries(stm32l5xx_hal PRIVATE stm32l5xx_cmsis)
 
