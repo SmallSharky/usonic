@@ -350,17 +350,21 @@ void UsbSendDword(uint32_t * data, size_t len)
 	LD1(0);
 }
 
-void SetTxLen()
+float gaussian(float x, float mu, float sig) {
+	return 1.0 / (sqrt(2.0 * PI) * sig) * exp(-pow((x - mu) / sig, 2.0) / 2);
+}
+
+void FillOutputBuffer()
 {
+	float mu = Coe.PackLen>>1;
+	float sig = Coe.PackLen;
+	float k = (float)Coe.Freq / gaussian(mu, mu, sig);
 	//set tx len
-	for (uint8_t i = 0; i < 16; i++)
+	for (uint8_t i = 0; i < 15; i++)
 	{
-		if (i < Coe.PackLen) 
-		{
-			TimTxPack[i] = Coe.Freq >> 1;
-		}
-		else TimTxPack[i] = 0;
+		TimTxPack[i] = k * gaussian(i, mu, sig);
 	}
+	TimTxPack[15] = 0;
 }
 
 void uPrintf(const char* fmt, ...) {
@@ -1405,7 +1409,7 @@ int main(void)
 	LCD_update();	
 	
 	
-	SetTxLen();
+	FillOutputBuffer();
 	
 	
 	BME280_Init();
@@ -2493,23 +2497,23 @@ void KeyAdj()
 		if (MenuPos == 0) Coe.AbsMin2 -= .001;
 		if (MenuPos == 1) Coe.AbsBreak1 += 50;
 		if (MenuPos == 3) Coe.AbsBreak2 += 50;
-		if (MenuPos == 2 && Coe.PackLen < 12) 
+		if (MenuPos == 2 && Coe.PackLen < 16)
 		{
 			Coe.PackLen++;
-			SetTxLen();
+			FillOutputBuffer();
 		}
 	}
 	
 	if (bp[2] && !ba[2]) //line down
 	{
 		ba[2] = true;
-		if (MenuPos == 0) Coe.AbsMin2 += .001;	
-		if (MenuPos == 1 && Coe.AbsBreak1 > 50) Coe.AbsBreak1 -= 50;	
-		if (MenuPos == 3 && Coe.AbsBreak2 > 50) Coe.AbsBreak2 -= 50;	
-		if (MenuPos == 2 && Coe.PackLen > 1) 
+		if (MenuPos == 0) Coe.AbsMin2 += .001;
+		if (MenuPos == 1 && Coe.AbsBreak1 > 50) Coe.AbsBreak1 -= 50;
+		if (MenuPos == 3 && Coe.AbsBreak2 > 50) Coe.AbsBreak2 -= 50;
+		if (MenuPos == 2 && Coe.PackLen > 1)
 		{
 			Coe.PackLen--;
-			SetTxLen();
+			FillOutputBuffer();
 		}
 	}
 
